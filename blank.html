@@ -2,8 +2,8 @@
  <head>
   <title>Blank New Tab</title>
   <style>
-  form, div, input {
-    color: #cccccc;
+  #start, form, div, input {
+    color: #2c3e50;
     text-align: center;
     font-family: sans-serif;
     font-size: 2rem;
@@ -13,15 +13,58 @@
     border-top: none;
     border-left: none;
     border-right: none;
+    border-color: #5e768e;
+  }
+
+  input:focus {
+    outline: 0;
+    border-color: #2c3e50;
+  }
+
+  button {
+    padding: 20px;
+    height: 60px;
+    border: none;
+    background-color: #1abc9c;
+    color: white;
+    font-family: sans-serif;
+    font-size: large;
+  }
+
+  #score-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  #score {
+    color: #f1c40f;
+  }
+
+  #timer p{
+    height: 100px;
+    margin: 30px auto;
+    line-height: 100px;
+  }
+
+  #timer .circle {
+    border-radius: 50%;
+    border: 1px solid;
+    width: 100px;
+  }
+
+  #answers {
+    color: #7f8c8d;
   }
 
   </style>
  </head>
  <body>
-  <div style="height:40%"></div>
-  <div class="score"></div>
+  <div id="score-container">🌟<span id='score'></span>🌟</div>
+  <div style="height:20%"></div>
+  <div id="timer"><p>&nbsp;</p></div>
+  <div id="start"><button>Start</button></div>
   <form id="phrase"></form>
-  <div id="answers"><p></p></div>
+  <div id="answers"></div>
   <script src="script.js"></script>
  </body>
 </html>
