@@ -3,10 +3,8 @@
   <title>Blank New Tab</title>
   <style>
   #start, form, div, input {
-    color: #2c3e50;
     text-align: center;
     font-family: sans-serif;
-    font-size: 2rem;
   }
 
   input {
@@ -14,6 +12,8 @@
     border-left: none;
     border-right: none;
     border-color: #5e768e;
+    color: #2c3e50;
+    font-size: 2rem;
   }
 
   input:focus {
@@ -31,12 +31,62 @@
     font-size: large;
   }
 
-  #score-container {
+  .scores {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+
+  .score-container {
+    color: white;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  #word-container {
     position: absolute;
     top: 10px;
     right: 10px;
+    font-size: 1.5em;
+    text-align: right;
   }
-  #score, #gameover {
+
+  #word-container p {
+    margin: 5px 0;
+    color: #7f8c8d;
+  }
+
+  .score-description {
+    font-size: small;
+  }
+
+  .score {
+    padding: 10px;
+    /*margin: 10px;*/
+    background-color: red;
+  }
+
+  .which-score .gametype {
+    font-size: 0.5em;
+  }
+
+  #high-score-ever {
+    background-color: #2c3e50;
+    color: white;
+  }
+
+  #longest-life-ever {
+    background-color: #2c3e50;
+    color: white;
+  }
+
+  #most-words-ever {
+    background-color: #2c3e50;
+    color: white;
+  }
+
+  #gameover {
+    font-size: 2em;
     color: #f1c40f;
   }
 
@@ -44,6 +94,7 @@
     height: 100px;
     margin: 30px auto;
     line-height: 100px;
+    font-size: 3em;
   }
 
   #timer .circle {
@@ -56,15 +107,73 @@
     font-size: 1.5em;
   }
 
-  #answers {
-    color: #7f8c8d;
+  #phrase {
+    color: #2c3e50;
+    font-size: 2rem;
   }
 
   </style>
  </head>
  <body>
-  <div id="score-container">🌟<span id='score'></span>🌟</div>
-  <div style="height:20%"></div>
+  <div class='scores'>
+    <div class="score-container">
+      <div class='score' id='high-score-ever'>
+        <div class='which-score'> All time</div>
+        <div id='high-score-number'>&nbsp;</div>
+        <div class='score-description'>high score</div>
+      </div>
+      <div class='score' id='longest-life-ever'>
+        <div class='which-score'> All time</div>
+        <div id='longest-life-number'>&nbsp;</div>
+        <div class='score-description'>longest game</div>
+      </div>
+      <div class='score' id='most-words-ever'>
+        <div class='which-score'> All time</div>
+        <div id='most-words-number'>&nbsp;</div>
+        <div class='score-description'>most words</div>
+      </div>
+    </div>
+    <div class="score-container">
+      <div id='gametype'>
+        <div class='score' id='high-score-this-gametype'>
+          <div class='gametype'>metaphor</div>
+          <div>&nbsp;</div>
+          <div class='score-description'>high score</div>
+        </div>
+        <div class='score' id='longest-life-this-gametype'>
+          <div class='gametype'>metaphor</div>
+          <div >&nbsp;</div>
+          <div class='score-description'>longest game</div>
+        </div>
+        <div class='score' id='most-words-this-gametype'>
+          <div class='gametype'>metaphor</div>
+          <div >&nbsp;</div>
+          <div class='score-description'>most words</div>
+        </div>
+      </div>
+    </div>
+    <div class="score-container">
+      <div id='right-now'>
+        <div class='score' id='high-score-this-gametype'>
+          <div class='right-now'>right now</div>
+          <div>0</div>
+          <div class='score-description'>high score</div>
+        </div>
+        <div class='score' id='longest-life-this-gametype'>
+          <div class='right-now'>right now</div>
+          <div>0</div>
+          <div class='score-description'>longest game</div>
+        </div>
+        <div class='score' id='most-words-this-gametype'>
+          <div class='right now'>right now</div>
+          <div>0</div>
+          <div class='score-description'>most words</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id='word-container'></div>
+  <div style="height:40%"></div>
   <div id="hurray"></div>
   <div><p id="gameover">&nbsp;</p></div>
   <div id="timer" style="display:none"><p>&nbsp;</p></div>

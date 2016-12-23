@@ -70,7 +70,7 @@ function addASecond() {
 }
 
 function clearAnswers() {
-  document.querySelector('#answers').innerHTML = '';
+  document.querySelector('#word-container').innerHTML = '';
   userInput = [];
 }
 
@@ -79,7 +79,7 @@ function clearGameOverText() {
 }
 
 function clearHurray() {
-  document.querySelector('#hurray').innerHTML = '&nbsp;';
+  document.querySelector('#hurray').innerHTML = '';
 }
 
 function clearOldGame(){
@@ -102,15 +102,18 @@ function setUpGame() {
 }
 
 function userBeatTheirHighScore(stats) {
-  return getEndOfGameScore() > parseInt(stats.highScore);
+  // return getEndOfGameScore() > parseInt(stats.highScore);
+  return getEndOfGameScore() > parseInt(localStorage.highScore);
 }
 
 function userBeatTheirMostWords(stats) {
-  return userInput.length > parseInt(stats.mostWords);
+  // return userInput.length > parseInt(stats.mostWords);
+  return userInput.length > parseInt(localStorage.mostWords);
 }
 
 function userBeatTheirLongestLife(stats) {
-  return lifeLength > parseInt(stats.longestLife);
+  // return lifeLength > parseInt(stats.longestLife);
+  return lifeLength > parseInt(localStorage.longestLife);
 }
 
 function celebrate(hurray) {
@@ -124,19 +127,26 @@ function updateEndOfGameStatsAndCelebrateAccordingly() {
 
   if (userBeatTheirHighScore(stats)) {
     celebrate(`You beat your high score with <strong>${getEndOfGameScore()}</strong> points!`);
-    stats.highScore = getEndOfGameScore();
+    // stats.highScore = getEndOfGameScore();
+    localStorage.highScore = getEndOfGameScore();
   }
 
   if (userBeatTheirMostWords(stats)) {
     celebrate(`<strong>${userInput.length}</strong> words! That's the most you've ever gotten!`);
-    stats.mostWords = userInput.length;
+    // stats.mostWords = userInput.length;
+    localStorage.mostWords = userInput.length;
   }
 
   if (userBeatTheirLongestLife(stats)) {
     celebrate(`<strong>${lifeLength}</strong> seconds! That was your longest game ever!`);
-    stats.longestLife = lifeLength;
+    // stats.longestLife = lifeLength;
+    localStorage.longestLife = lifeLength;
   }
-  localStorage[gameType] = JSON.stringify(stats);
+
+  // localStorage[gameType] = JSON.stringify(stats);
+  if (!document.querySelector('#hurray')) {
+    setGameOverText();
+  }
 }
 
 function getEndOfGameScore() {
@@ -145,7 +155,7 @@ function getEndOfGameScore() {
 
 function setGameOverText() {
   const score = getEndOfGameScore();
-  const gameOverText = `🤓 You got <strong>${score}</strong> points with <strong>${userInput.length}</strong> words!`;
+  const gameOverText = `&#129299; You got <strong>${score}</strong> points with <strong>${userInput.length}</strong> words!`;
   document.querySelector('#gameover').innerHTML = gameOverText;
 }
 
@@ -162,7 +172,7 @@ function tearDownGame() {
 function addAnswerToPage(answer, points) {
   const p = document.createElement('p');
   p.innerHTML = `${answer} (${points})`;
-  prependNode(p, document.querySelector('#answers'));
+  document.querySelector('#word-container').appendChild(p);
 }
 
 function clearInput(){
@@ -188,16 +198,27 @@ function initializeGameTypeStats(gameType) {
   localStorage[gameType] = localStorage[gameType] || getInitializedStats(gameType);
 }
 
+function addStatsToPage() {
+  document.getElementById('high-score-number').innerHTML = localStorage.highScore;
+  document.getElementById('longest-life-number').innerHTML = localStorage.longestLife; 
+  document.getElementById('most-words-number').innerHTML = localStorage.mostWords;
+}
+
 function initializeStats() {
   localStorage.score = localStorage.score || 0;
+  localStorage.highScore = localStorage.highScore || 0;
+  localStorage.longestLife = localStorage.longestLife || 0;
+  localStorage.mostWords = localStorage.mostWords || 0;
   
-  Object.keys(prompts).forEach(function(gameType) {
-    initializeGameTypeStats(gameType);
-  });
+  addStatsToPage();
+
+  // Object.keys(prompts).forEach(function(gameType) {
+  //   initializeGameTypeStats(gameType);
+  // });
 }
 
 function startGame() {
-  seconds = 5;
+  seconds = 15;
   lifeLength = seconds;
   setUpGame();
   document.querySelector('#timer').style.display = 'block';
@@ -241,7 +262,6 @@ document.querySelector('#phrase').addEventListener('submit', function(e) {
   addASecond();
   localStorage.score = Math.round(parseInt(localStorage.score) + points);
 
-  butts.innerHTML = localStorage.score;
   addAnswerToPage(answer, points);
   clearInput();
 })
@@ -270,15 +290,16 @@ const prompts = {
   ]
 }
 
-const butts = document.querySelector('#score');
 let userInput = [];
 let lastAnswerTimestamp, seconds, startOfGameScore, gameType, lifeLength;
 
 initializeStats();
-butts.innerHTML = localStorage.score;
 
 // TODO:
-// - show high scores and current scores as you're playing
-// - distinguish somehow between gameTypes
-// - allow to choose type of game?
-// - high score, longest life, most words of all time! 
+// let the game-specific score and all time score run at the same time
+// edit the beat high score text so that it makes more sense.
+// hook up the game specific scores to show when you start the game
+// - populates the heading with the correct (pretty) gametype
+// - populates the square with the number
+// hook up the right now, game specific scores to update automatically
+// refactor the HTML/CSS
