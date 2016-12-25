@@ -176,6 +176,7 @@ function clearOldGame(){
   clearTimer();
   clearGameOverText();
   clearHurray();
+  resetScoreBoard();
 }
 
 // ************************************************
@@ -194,7 +195,6 @@ function getInitializedStats() {
 function initializeGameTypeStats(gameType) {
   // New user: Initialize stats to zero
   // Existing user: do nothing.
-  console.log('hello');
   localStorage[gameType] = localStorage[gameType] || getInitializedStats(gameType);
 }
 
@@ -204,14 +204,15 @@ function initializeStats() {
   });
 
   initializeGameTypeStats('allTime');
+  showAllTimeStats();
 }
 
 function setUpGame() {
   startOfGameScore = parseInt(localStorage.score);
   lastAnswerTimestamp = Date.now();
   hideButton();
-  clearOldGame();
   gameType = getRandomGameType();
+  clearOldGame();
   showScoreBoard();
   document.querySelector('#phrase').innerHTML = generatePhraseHTML(getRandomQuestion(prompts[gameType]));
   document.querySelector('#timer p').className = 'circle';
@@ -223,28 +224,36 @@ function setUpGame() {
 // ************* SCORE
 // ************************************************
 
+function showAllTimeStats() {
+  let allTimeStats = JSON.parse(localStorage.allTime);
+
+  addStatToPage('#high-score-ever .score', allTimeStats.highScore);
+  addStatToPage('#longest-life-ever .score', allTimeStats.longestLife);
+  addStatToPage('#most-words-ever .score', allTimeStats.mostWords);
+}
+
 function userBeatTheirHighScoreForThisGameType(stats) {
   return getEndOfGameScore() > parseInt(stats.highScore);
 }
 
-function userBeatTheirHighScoreOfAllTime(){
-  return getEndOfGameScore() > parseInt(localStorage.highScore);
+function userBeatTheirHighScoreOfAllTime(allTimeStats){
+  return getEndOfGameScore() > parseInt(allTimeStats.highScore);
 }
 
 function userBeatTheirMostWordsForThisGameType(stats) {
   return userInput.length > parseInt(stats.mostWords);
 }
 
-function userBeatTheirMostWordsOfAllTime() {
-  return userInput.length > parseInt(localStorage.mostWords);
+function userBeatTheirMostWordsOfAllTime(allTimeStats) {
+  return userInput.length > parseInt(allTimeStats.mostWords);
 }
 
 function userBeatTheirLongestLifeForThisGameType(stats) {
   return lifeLength > parseInt(stats.longestLife);
 }
 
-function userBeatTheirLongestLifeOfAllTime() {
-  return lifeLength > parseInt(localStorage.longestLife);
+function userBeatTheirLongestLifeOfAllTime(allTimeStats) {
+  return lifeLength > parseInt(allTimeStats.longestLife);
 }
 
 function celebrate(hurray) {
@@ -262,7 +271,7 @@ function updateEndOfGameStatsAndCelebrateAccordingly() {
     stats.highScore = getEndOfGameScore();
   }
 
-  if (userBeatTheirHighScoreOfAllTime) {
+  if (userBeatTheirHighScoreOfAllTime(allTimeStats)) {
     allTimeStats.highScore = getEndOfGameScore();
   }
 
@@ -271,7 +280,7 @@ function updateEndOfGameStatsAndCelebrateAccordingly() {
     stats.longestLife = lifeLength;
   }
 
-  if (userBeatTheirLongestLifeOfAllTime) {
+  if (userBeatTheirLongestLifeOfAllTime(allTimeStats)) {
     allTimeStats.longestLife = lifeLength;    
   }
 
@@ -280,7 +289,7 @@ function updateEndOfGameStatsAndCelebrateAccordingly() {
     stats.mostWords = userInput.length;
   }
 
-  if (userBeatTheirMostWordsOfAllTime) {
+  if (userBeatTheirMostWordsOfAllTime(allTimeStats)) {
     allTimeStats.mostWords = userInput.length;
   }
 
@@ -412,7 +421,9 @@ const prettifyGametype = {
 let userInput = [];
 let lastAnswerTimestamp, seconds, startOfGameScore, gameType, lifeLength;
 
+// resetScores();
 initializeStats();
+
 
 // TODO:
 // let the game-specific score and all time score run at the same time
