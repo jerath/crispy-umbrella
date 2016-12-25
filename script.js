@@ -17,6 +17,30 @@ function getWord(word, callback) {
   xhr.send(data); 
 }
 
+// ************************************************
+// ************* DEV
+// ************************************************
+
+function resetScores() {
+  Object.keys(prompts).forEach(function(gameType) {
+    localStorage[gameType] = JSON.stringify({
+      highScore: 0,
+      mostWords: 0,
+      longestLife: 0
+    });
+  });
+
+  localStorage.allTime = JSON.stringify({
+    highScore: 0,
+    mostWords: 0,
+    longestLife: 0
+  });
+}
+
+// ************************************************
+// ************* GET PHRASE
+// ************************************************
+
 function generatePhraseHTML(phrase){
   return `<p>${phrase.join('<input type="text" autofocus required></input>')}</p>`
 }
@@ -30,13 +54,13 @@ function getRandomGameType() {
   return gameTypes[Math.floor(Math.random() * gameTypes.length)];
 }
 
-function prependNode(newNode, thing) {
-  thing.insertBefore(newNode, thing.childNodes[0]);
-}
-
 function isDuplicateAnswer(answer) {
   return userInput.includes(answer);
 }
+
+// ************************************************
+// ************* PAGE HELPERS
+// ************************************************
 
 function showQuestionPrompt() {
   document.getElementById('phrase').style.display = 'block';
@@ -44,15 +68,6 @@ function showQuestionPrompt() {
 
 function hideQuestionPrompt() {
   document.getElementById('phrase').style.display = 'none';
-}
-
-function updateTimer() {
-  document.querySelector('#timer p').innerHTML = seconds;
-}
-
-function clearTimer(){
-  document.querySelector('#timer p').innerHTML = ('');  
-  document.querySelector('#timer').style.display = 'none';
 }
 
 function hideButton() {
@@ -63,11 +78,70 @@ function showButton() {
   document.querySelector('#start').style.display = 'block';  
 }
 
+function showScoreBoard() {
+  document.querySelector('#gametype-section').style.display = 'inline-block';
+  document.querySelector('#right-now-section').style.display = 'inline-block';
+}
+
+function prependNode(newNode, thing) {
+  thing.insertBefore(newNode, thing.childNodes[0]);
+}
+
+function addAnswerToPage(answer, points) {
+  const p = document.createElement('p');
+  p.innerHTML = `${answer} (${points})`;
+  document.querySelector('#word-container').appendChild(p);
+}
+
+function addStatToPage(selector, stat) {
+  document.querySelector(selector).innerHTML = stat;
+}
+
+function addStatsToPage() {
+  let stats = JSON.parse(localStorage[gameType]);
+  let allTimeStats = JSON.parse(localStorage.allTime);
+  console.log(allTimeStats);
+
+  // Add the all time scores
+  addStatToPage('#high-score-ever .score', allTimeStats.highScore);
+  addStatToPage('#longest-life-ever .score', allTimeStats.longestLife);
+  addStatToPage('#most-words-ever .score', allTimeStats.mostWords);
+
+  // Add the game-type specific scores
+  document.querySelector('#high-score-gametype .score').innerHTML = stats.highScore;
+  document.querySelector('#longest-life-gametype .score').innerHTML = stats.longestLife; 
+  document.querySelector('#most-words-gametype .score').innerHTML = stats.mostWords;
+  document.querySelector('#high-score-gametype .which-score').innerHTML = prettifyGametype[gameType];
+  document.querySelector('#longest-life-gametype .which-score').innerHTML = prettifyGametype[gameType];
+  document.querySelector('#most-words-gametype .which-score').innerHTML = prettifyGametype[gameType];
+}
+
+// ************************************************
+// ************* TIMER
+// ************************************************
+
+function updateTimer() {
+  document.querySelector('#timer p').innerHTML = seconds;
+}
+
+function clearTimer(){
+  document.querySelector('#timer p').innerHTML = ('');  
+  document.querySelector('#timer').style.display = 'none';
+}
+
+function changeTimerColour(colour) {
+  document.querySelector('#timer p').style.color = colour;
+}
+
 function addASecond() {
   // I know, it's two seconds. But it looks like one.
   seconds += 2;
   lifeLength += 2;
 }
+
+// ************************************************
+// ************* RESET 
+// ************************************************
 
 function clearAnswers() {
   document.querySelector('#word-container').innerHTML = '';
@@ -82,11 +156,54 @@ function clearHurray() {
   document.querySelector('#hurray').innerHTML = '';
 }
 
+function clearInput(){
+  document.querySelector('input').value = '';
+}
+
+function resetScoreBoard() {
+  // Reset right now stats to zero
+  document.querySelector('#high-score-right-now .score').innerHTML = 0;
+  document.querySelector('#longest-life-right-now .score').innerHTML = 0;
+  document.querySelector('#most-words-right-now .score').innerHTML = 0;
+  // Set display none to board blocks
+
+  document.querySelector('#gametype-section').style.display = 'none';
+  document.querySelector('#right-now-section').style.display = 'none';
+}
+
 function clearOldGame(){
   clearAnswers();
   clearTimer();
   clearGameOverText();
   clearHurray();
+}
+
+// ************************************************
+// ************* INITIALIZE GAME
+// ************************************************
+
+function getInitializedStats() {  
+  // This function returns a string to be saved in localStorage
+  return JSON.stringify({
+    highScore: 0,
+    mostWords: 0,
+    longestLife: 0
+  });
+}
+
+function initializeGameTypeStats(gameType) {
+  // New user: Initialize stats to zero
+  // Existing user: do nothing.
+  console.log('hello');
+  localStorage[gameType] = localStorage[gameType] || getInitializedStats(gameType);
+}
+
+function initializeStats() {
+  Object.keys(prompts).forEach(function(gameType) {
+    initializeGameTypeStats(gameType);
+  });
+
+  initializeGameTypeStats('allTime');
 }
 
 function setUpGame() {
@@ -95,24 +212,38 @@ function setUpGame() {
   hideButton();
   clearOldGame();
   gameType = getRandomGameType();
+  showScoreBoard();
   document.querySelector('#phrase').innerHTML = generatePhraseHTML(getRandomQuestion(prompts[gameType]));
   document.querySelector('#timer p').className = 'circle';
   showQuestionPrompt();
   document.querySelector('input').focus();
 }
 
-function userBeatTheirHighScore(stats) {
-  // return getEndOfGameScore() > parseInt(stats.highScore);
+// ************************************************
+// ************* SCORE
+// ************************************************
+
+function userBeatTheirHighScoreForThisGameType(stats) {
+  return getEndOfGameScore() > parseInt(stats.highScore);
+}
+
+function userBeatTheirHighScoreOfAllTime(){
   return getEndOfGameScore() > parseInt(localStorage.highScore);
 }
 
-function userBeatTheirMostWords(stats) {
-  // return userInput.length > parseInt(stats.mostWords);
+function userBeatTheirMostWordsForThisGameType(stats) {
+  return userInput.length > parseInt(stats.mostWords);
+}
+
+function userBeatTheirMostWordsOfAllTime() {
   return userInput.length > parseInt(localStorage.mostWords);
 }
 
-function userBeatTheirLongestLife(stats) {
-  // return lifeLength > parseInt(stats.longestLife);
+function userBeatTheirLongestLifeForThisGameType(stats) {
+  return lifeLength > parseInt(stats.longestLife);
+}
+
+function userBeatTheirLongestLifeOfAllTime() {
   return lifeLength > parseInt(localStorage.longestLife);
 }
 
@@ -124,34 +255,54 @@ function celebrate(hurray) {
 
 function updateEndOfGameStatsAndCelebrateAccordingly() {
   let stats = JSON.parse(localStorage[gameType]);
+  let allTimeStats = JSON.parse(localStorage.allTime);
 
-  if (userBeatTheirHighScore(stats)) {
-    celebrate(`You beat your high score with <strong>${getEndOfGameScore()}</strong> points!`);
-    // stats.highScore = getEndOfGameScore();
-    localStorage.highScore = getEndOfGameScore();
+  if (userBeatTheirHighScoreForThisGameType(stats)) {
+    // celebrate(`You beat your high score with <strong>${getEndOfGameScore()}</strong> points!`);
+    stats.highScore = getEndOfGameScore();
   }
 
-  if (userBeatTheirMostWords(stats)) {
-    celebrate(`<strong>${userInput.length}</strong> words! That's the most you've ever gotten!`);
-    // stats.mostWords = userInput.length;
-    localStorage.mostWords = userInput.length;
+  if (userBeatTheirHighScoreOfAllTime) {
+    allTimeStats.highScore = getEndOfGameScore();
   }
 
-  if (userBeatTheirLongestLife(stats)) {
-    celebrate(`<strong>${lifeLength}</strong> seconds! That was your longest game ever!`);
-    // stats.longestLife = lifeLength;
-    localStorage.longestLife = lifeLength;
+  if (userBeatTheirLongestLifeForThisGameType(stats)) {
+    // celebrate(`<strong>${lifeLength}</strong> seconds! That was your longest game ever!`);
+    stats.longestLife = lifeLength;
   }
 
-  // localStorage[gameType] = JSON.stringify(stats);
-  if (!document.querySelector('#hurray')) {
-    setGameOverText();
+  if (userBeatTheirLongestLifeOfAllTime) {
+    allTimeStats.longestLife = lifeLength;    
   }
+
+  if (userBeatTheirMostWordsForThisGameType(stats)) {
+    // celebrate(`<strong>${userInput.length}</strong> words! That's the most you've ever gotten!`);
+    stats.mostWords = userInput.length;
+  }
+
+  if (userBeatTheirMostWordsOfAllTime) {
+    allTimeStats.mostWords = userInput.length;
+  }
+
+  localStorage[gameType] = JSON.stringify(stats);
+  localStorage.allTime = JSON.stringify(allTimeStats);
+  
+  setGameOverText();
 }
 
 function getEndOfGameScore() {
   return parseInt(localStorage.score) - startOfGameScore;
 }
+
+function updateRightNowStats(points) {
+  document.querySelector('#high-score-right-now .score').innerHTML = getEndOfGameScore();
+  document.querySelector('#longest-life-right-now .score').innerHTML = lifeLength;
+  document.querySelector('#most-words-right-now .score').innerHTML = userInput.length;
+}
+
+// ************************************************
+// ************* GAME OVER
+// ************************************************
 
 function setGameOverText() {
   const score = getEndOfGameScore();
@@ -169,58 +320,11 @@ function tearDownGame() {
   showButton();
 }
 
-function addAnswerToPage(answer, points) {
-  const p = document.createElement('p');
-  p.innerHTML = `${answer} (${points})`;
-  document.querySelector('#word-container').appendChild(p);
-}
-
-function clearInput(){
-  document.querySelector('input').value = '';
-}
-
-function changeTimerColour(colour) {
-  document.querySelector('#timer p').style.color = colour;
-}
-
-function getInitializedStats() {  
-  // This function returns a string to be saved in localStorage
-  return JSON.stringify({
-    highScore: 0,
-    mostWords: 0,
-    longestLife: 0
-  });
-}
-
-function initializeGameTypeStats(gameType) {
-  // New user: Initialize stats to zero
-  // Existing user: do nothing.
-  localStorage[gameType] = localStorage[gameType] || getInitializedStats(gameType);
-}
-
-function addStatsToPage() {
-  document.getElementById('high-score-number').innerHTML = localStorage.highScore;
-  document.getElementById('longest-life-number').innerHTML = localStorage.longestLife; 
-  document.getElementById('most-words-number').innerHTML = localStorage.mostWords;
-}
-
-function initializeStats() {
-  localStorage.score = localStorage.score || 0;
-  localStorage.highScore = localStorage.highScore || 0;
-  localStorage.longestLife = localStorage.longestLife || 0;
-  localStorage.mostWords = localStorage.mostWords || 0;
-  
-  addStatsToPage();
-
-  // Object.keys(prompts).forEach(function(gameType) {
-  //   initializeGameTypeStats(gameType);
-  // });
-}
-
 function startGame() {
   seconds = 15;
   lifeLength = seconds;
   setUpGame();
+  addStatsToPage();
   document.querySelector('#timer').style.display = 'block';
   countdown();
   const intervalId = setInterval(countdown, 1000);
@@ -240,6 +344,10 @@ function startGame() {
     }
   }
 }
+
+// ************************************************
+// ************* LISTENERS
+// ************************************************
 
 document.querySelector('#phrase').addEventListener('input', function(e) {
   const answer = this.querySelector('input').value;
@@ -263,12 +371,17 @@ document.querySelector('#phrase').addEventListener('submit', function(e) {
   localStorage.score = Math.round(parseInt(localStorage.score) + points);
 
   addAnswerToPage(answer, points);
+  updateRightNowStats(points);
   clearInput();
 })
 
 document.querySelector('button').addEventListener('click', function(e) {
   startGame();
 })
+
+// ************************************************
+// ************* GLOBALS 
+// ************************************************
 
 const prompts = {
   fillTheBlank: [
@@ -288,6 +401,12 @@ const prompts = {
     ["", " is an item of clothing."],
     ["", " is a food."],
   ]
+}
+
+const prettifyGametype = {
+  fillTheBlank: 'fill the blank',
+  metaphor: 'metaphor',
+  nameGame: 'name game'
 }
 
 let userInput = [];

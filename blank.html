@@ -86,13 +86,30 @@
   .score-box {
     padding: 10px;
     /*margin: 10px;*/
-    background-color: red;
   }
 
   .which-score .score-description {
     font-size: small;
   }
 
+  .score {
+    font-size: large;
+  }
+
+  #all-time-section {
+    background-color: #ffffff;  
+  }
+
+  #gametype-section {
+    background-color: #8e44ad;
+    display:none;
+  }
+
+  #right-now-section {
+    background-color: #e67e22;
+    display:none;
+  }
+  
   #high-score-ever {
     background-color: #2c3e50;
     color: white;
@@ -112,7 +129,7 @@
  </head>
  <body>
   <div class='scores'>
-    <div class="score-row">
+    <div class="score-row" id="all-time-section">
       <div class='score-box' id='high-score-ever'>
         <div class='which-score'> All time</div>
         <div class='score'>&nbsp;</div>
@@ -129,7 +146,7 @@
         <div class='score-description'>most words</div>
       </div>
     </div>
-    <div class="score-row">
+    <div class="score-row" id='gametype-section'>
       <div class='score-box' id='high-score-gametype'>
         <div class='which-score'>metaphor</div>
         <div class='score'>&nbsp;</div>
@@ -146,20 +163,20 @@
         <div class='score-description'>most words</div>
       </div>
     </div>
-    <div class="score-row">
+    <div class="score-row" id='right-now-section'>
       <div class='score-box' id='high-score-right-now'>
         <div class='which-score'>right now</div>
-        <div class='score'>&nbsp;</div>
+        <div class='score'>0</div>
         <div class='score-description'>high score</div>
       </div>
-      <div class='score-box' id='longest-life-this-gametype'>
+      <div class='score-box' id='longest-life-right-now'>
         <div class='which-score'>right now</div>
-        <div class='score'>&nbsp;</div>
+        <div class='score'>0</div>
         <div class='score-description'>longest game</div>
       </div>
-      <div class='score-box' id='most-words-this-gametype'>
+      <div class='score-box' id='most-words-right-now'>
         <div class='which-score'>right now</div>
-        <div class='score'>&nbsp;</div>
+        <div class='score'>0</div>
         <div class='score-description'>most words</div>
       </div>
     </div>
