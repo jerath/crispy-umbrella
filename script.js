@@ -410,12 +410,44 @@ const prompts = {
     ["", " is an item of clothing."],
     ["", " is a food."],
   ]
+  // ,
+  // transitional: {
+  //   addition: ["To indicate addition: ", "."],
+  //   contrast: ["To indicate contrast: ", "."]
+  // }
 }
 
 const prettifyGametype = {
   fillTheBlank: 'fill the blank',
   metaphor: 'metaphor',
-  nameGame: 'name game'
+  nameGame: 'name game',
+  // transitional: 'transitional'
+}
+
+const transitionalAnswerKey = {
+  addition: [
+    'again',
+    'also', 
+    'and', 
+    'and then', 
+    'besides', 
+    'equally important', 
+    'first', 
+    'finally', 
+    'further', 
+    'furthermore', 
+    'in addition', 
+    'last', 
+    'lastly', 
+    'likewise', 
+    'moreover', 
+    'next', 
+    'second', 
+    'secondly', 
+    'third', 
+    'thirdly', 
+    'too'
+  ]
 }
 
 let userInput = [];
@@ -426,10 +458,34 @@ initializeStats();
 
 
 // TODO:
-// let the game-specific score and all time score run at the same time
 // edit the beat high score text so that it makes more sense.
-// hook up the game specific scores to show when you start the game
-// - populates the heading with the correct (pretty) gametype
-// - populates the square with the number
-// hook up the right now, game specific scores to update automatically
 // refactor the HTML/CSS
+// refactor everything
+
+
+// Transitional words and phrases
+// To indicate addition:
+// again, also, and, and then, besides, equally important, first, finally, further, furthermore, in addition, last, lastly, likewise, moreover, next, second, secondly, thrid, thirdly, too
+
+// To indicate contrast:
+// and yet, after all, at the same time, although true, but, for all that, however,. in contrast, nevertheless, nothwithstanding, on the contrary, on the other hand, still, yet, in spite of
+
+// To indicate comparison:
+// likewise, in a like manner, similiarly, parallel to this
+
+// To indicate summary
+// In brief, in short, on the whole, to sum up, to summarize, in conclusion, to conclude
+
+// To indicate special features or examples:
+
+// for example, for instance, indeed, incidentally, in fact, in other words, that is, specifically, in particular
+
+// To indicate result:
+// accordingly, consequently, hence, therefore, thus , truly, as a result, then, in short
+
+// To indicate the passsage of time:
+
+// afterwards, at length, immediately, in the meantime, meanwhile, soon, at last, after a short time, while, thereupon, thereafter, temporarlily, until, presently, shortly, ately, of late, since.
+// To indicate concession (agreement)
+// at the same time, of course, after all, naturally, I admit
+
